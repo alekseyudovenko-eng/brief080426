@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Palm Oil Market</title>
+    <title>Palm Oil Market Analytics</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -13,319 +13,1163 @@
             box-sizing: border-box;
         }
         
+        :root {
+            --primary-color: #4CAF50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --info-color: #2196F3;
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--tg-theme-bg-color, #fff);
-            color: var(--tg-theme-text-color, #000);
-            padding: 16px;
-            padding-bottom: 80px;
+            background: var(--tg-theme-bg-color, #f5f5f5);
+            color: var(--tg-theme-text-color, #212121);
+            padding-bottom: 100px;
+            line-height: 1.6;
         }
         
         .header {
-            position: fixed;
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            background: var(--tg-theme-bg-color, #fff);
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
-            z-index: 100;
+            background: linear-gradient(135deg, var(--tg-theme-button-color, #4CAF50), #2E7D32);
+            color: white;
+            padding: 20px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
         }
         
         .header h1 {
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
         
         .header .subtitle {
-            font-size: 12px;
-            color: var(--tg-theme-hint-color, #999);
-            margin-top: 4px;
+            font-size: 13px;
+            opacity: 0.9;
         }
         
-        .content {
-            margin-top: 80px;
-        }
-        
-        .card {
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
+        .last-update {
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-        }
-        
-        .news-item {
-            background: var(--tg-theme-bg-color, #fff);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-left: 3px solid #4CAF50;
-        }
-        
-        .news-item h3 {
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-        
-        .news-item p {
+            gap: 6px;
+            margin-top: 8px;
             font-size: 12px;
-            color: var(--tg-theme-hint-color, #666);
-        }
-        
-        .price-badge {
-            display: inline-block;
+            background: rgba(255,255,255,0.2);
             padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-            margin: 4px;
+            border-radius: 12px;
         }
         
-        .price-up {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .price-down {
-            background: #ffebee;
-            color: #c62828;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-        
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
-        }
-        
-        th {
-            font-weight: 600;
+        .nav-tabs {
+            position: sticky;
+            top: 100px;
             background: var(--tg-theme-bg-color, #fff);
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 250px;
-            margin-top: 12px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        
-        .stat-item {
-            background: var(--tg-theme-bg-color, #fff);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 11px;
-            color: var(--tg-theme-hint-color, #666);
-        }
-        
-        .tab-buttons {
+            padding: 12px 16px;
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding: 8px 0;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+            z-index: 999;
+            scrollbar-width: none;
         }
         
-        .tab-btn {
-            padding: 8px 16px;
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .nav-tab {
+            padding: 10px 20px;
             border: none;
-            border-radius: 20px;
+            border-radius: 24px;
             background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            color: var(--tg-theme-text-color, #000);
+            color: var(--tg-theme-text-color, #212121);
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
+            transition: all 0.3s;
         }
         
-        .tab-btn.active {
+        .nav-tab.active {
             background: var(--tg-theme-button-color, #4CAF50);
             color: var(--tg-theme-button-text-color, #fff);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .container {
+            padding: 16px;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         .section {
             display: none;
+            animation: fadeIn 0.3s;
         }
         
         .section.active {
             display: block;
         }
         
-        .refresh-btn {
-            position: fixed;
-            bottom: 16px;
-            right: 16px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--tg-theme-button-color, #4CAF50);
-            color: var(--tg-theme-button-text-color, #fff);
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: var(--tg-theme-bg-color, #fff);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--tg-theme-secondary-bg-color, #f5f5f5);
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 20px;
+            background: linear-gradient(135deg, var(--tg-theme-button-color, #4CAF50), #81C784);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .news-item {
+            background: var(--tg-theme-secondary-bg-color, #f9f9f9);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--tg-theme-button-color, #4CAF50);
+            transition: transform 0.2s;
+        }
+        
+        .news-item:hover {
+            transform: translateX(4px);
+        }
+        
+        .news-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .news-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--tg-theme-button-color, #4CAF50);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .news-title {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.4;
+            flex: 1;
+        }
+        
+        .news-date {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color, #757575);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .news-content {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            color: var(--tg-theme-text-color, #424242);
+        }
+        
+        .news-source {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--tg-theme-bg-color, #fff);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--tg-theme-button-color, #4CAF50);
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid var(--tg-theme-button-color, #4CAF50);
+        }
+        
+        .news-source:hover {
+            background: var(--tg-theme-button-color, #4CAF50);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--tg-theme-secondary-bg-color, #f5f5f5), #fff);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--tg-theme-button-color, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: var(--tg-theme-button-color, #4CAF50);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color, #757575);
+        }
+        
+        .stat-change {
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        
+        .stat-change.up {
+            color: #4CAF50;
+        }
+        
+        .stat-change.down {
+            color: #f44336;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 16px;
+        }
+        
+        .chart-container.small {
+            height: 250px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+            overflow-x: auto;
+            display: block;
+        }
+        
+        thead {
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+        }
+        
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid var(--tg-theme-button-color, #4CAF50);
+        }
+        
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+        }
+        
+        tr:hover {
+            background: var(--tg-theme-secondary-bg-color, #f9f9f9);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        .badge-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .badge-danger {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .badge-warning {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .badge-info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .conclusion-item {
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .conclusion-item.positive {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .conclusion-item.negative {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        
+        .conclusion-item.neutral {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .conclusion-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .conclusion-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .conclusion-content p {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .floating-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--tg-theme-button-color, #4CAF50), #66BB6A);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .floating-button:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 6px 24px rgba(76, 175, 80, 0.5);
+        }
+        
+        .floating-button:active {
+            transform: scale(0.95);
+        }
+        
+        .price-highlight {
+            background: linear-gradient(135deg, #fff9c4, #fff59d);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .price-highlight .current-price {
+            font-size: 36px;
+            font-weight: 800;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+        
+        .price-highlight .price-change {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+            }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border-top-color: var(--tg-theme-button-color, #4CAF50);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🌴 Palm Oil Market</h1>
-        <div class="subtitle">Обновлено: <span id="lastUpdate">-</span></div>
+        <div class="subtitle">Аналитика рынка пальмового масла</div>
+        <div class="last-update">
+            <span></span>
+            <span id="lastUpdate">Обновление...</span>
+        </div>
     </div>
     
-    <div class="content">
-        <!-- Табы -->
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('dashboard')">📊 Дашборд</button>
-            <button class="tab-btn" onclick="showTab('news')">📰 Новости</button>
-            <button class="tab-btn" onclick="showTab('charts')">📈 Графики</button>
-            <button class="tab-btn" onclick="showTab('tables')">📋 Таблицы</button>
-        </div>
-        
-        <!-- Дашборд -->
-        <div id="dashboard" class="section active">
+    <nav class="nav-tabs">
+        <button class="nav-tab active" onclick="showSection('dashboard')">📊 Дашборд</button>
+        <button class="nav-tab" onclick="showSection('news')">📰 Новости</button>
+        <button class="nav-tab" onclick="showSection('charts')">📈 Графики</button>
+        <button class="nav-tab" onclick="showSection('tables')">📋 Таблицы</button>
+        <button class="nav-tab" onclick="showSection('conclusions')">📌 Выводы</button>
+    </nav>
+    
+    <div class="container">
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="section active">
+            <div class="price-highlight">
+                <div class="current-price">$1,135/т</div>
+                <div class="price-change badge badge-danger">▼ -2.45% (-$28)</div>
+                <div style="margin-top: 8px; font-size: 14px; color: #666;">
+                    CPO MDEX • 8 апреля 2026
+                </div>
+            </div>
+            
             <div class="card">
-                <div class="card-title">💹 Текущие цены</div>
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Ключевые показатели</div>
+                </div>
                 <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-value">$1,135</div>
-                        <div class="stat-label">CPO (USD/т)</div>
-                    </div>
-                    <div class="stat-item">
+                    <div class="stat-card">
                         <div class="stat-value">4,765</div>
                         <div class="stat-label">MYR/т</div>
+                        <div class="stat-change down">▼ -0.96%</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value">-2.45%</div>
-                        <div class="stat-label">Изменение</div>
-                    </div>
-                    <div class="stat-item">
+                    <div class="stat-card">
                         <div class="stat-value">17.7%</div>
                         <div class="stat-label">Волатильность</div>
+                        <div class="stat-change">20 дней</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">$311</div>
+                        <div class="stat-label">Спред BOPO</div>
+                        <div class="stat-change up">▲ +$206</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">$293</div>
+                        <div class="stat-label">Спред POGO</div>
+                        <div class="stat-change down">▼ -$46</div>
                     </div>
                 </div>
             </div>
             
             <div class="card">
-                <div class="card-title">🔥 Ключевые события</div>
-                <div class="news-item">
-                    <h3>🇹🇭 Таиланд: экспортный контроль</h3>
-                    <p>Госконтроль с 7 апреля 2026</p>
+                <div class="card-header">
+                    <div class="card-icon">🔥</div>
+                    <div class="card-title">Главные события</div>
                 </div>
-                <div class="news-item">
-                    <h3>🇮🇩 Индонезия: экспорт +36.3%</h3>
-                    <p>4.54 млн тонн за 2 месяца</p>
+                <div class="news-item" style="border-left-color: #f44336;">
+                    <div class="news-header">
+                        <div class="news-number" style="background: #f44336;">1</div>
+                        <div class="news-title">🇹🇭 Таиланд: экспортный контроль</div>
+                    </div>
+                    <div class="news-date">📅 7 апреля 2026</div>
+                    <div class="news-content">
+                        Введён государственный контроль экспорта сырого пальмового масла. Требуется письменное разрешение.
+                    </div>
+                </div>
+                <div class="news-item" style="border-left-color: #4CAF50;">
+                    <div class="news-header">
+                        <div class="news-number" style="background: #4CAF50;">2</div>
+                        <div class="news-title">🇮 Индонезия: рост экспорта</div>
+                    </div>
+                    <div class="news-date">📅 1 апреля 2026</div>
+                    <div class="news-content">
+                        Экспорт вырос на 36.3% до 4.54 млн тонн за первые 2 месяца 2026 года.
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
         
-        <!-- Новости -->
-        <div id="news" class="section">
+        <!-- NEWS -->
+        <section id="news" class="section">
             <div class="card">
-                <div class="card-title">📰 ТОП-5 новостей</div>
-                <div class="news-item">
-                    <h3>1️⃣ Таиланд ввёл госконтроль экспорта</h3>
-                    <p>7 апреля 2026. Требуется разрешение на экспорт CPO</p>
+                <div class="card-header">
+                    <div class="card-icon">📰</div>
+                    <div class="card-title">ТОП-5 КЛЮЧЕВЫХ НОВОСТЕЙ</div>
                 </div>
-                <div class="news-item">
-                    <h3>2️⃣ Цены снизились</h3>
-                    <p>7-8 апреля: 4,699 → 4,765 MYR/т (-0.96%)</p>
+                <div style="margin-bottom: 16px; padding: 12px; background: #e3f2fd; border-radius: 8px; font-size: 13px;">
+                    📅 Период: <b>30 марта - 8 апреля 2026</b>
                 </div>
+                
+                <!-- News 1 -->
                 <div class="news-item">
-                    <h3>3️⃣ Экспорт Индонезии +36.3%</h3>
-                    <p>4.54 млн тонн на $4.69 млрд</p>
+                    <div class="news-header">
+                        <div class="news-number">1</div>
+                        <div class="news-title">🇹 Таиланд ввёл государственный контроль экспорта сырого пальмового масла</div>
+                    </div>
+                    <div class="news-date">
+                        <span>📅</span> 7 апреля 2026
+                        <span style="margin: 0 8px;">•</span>
+                        <span>🕐</span> 14:30 GMT+7
+                    </div>
+                    <div class="news-content">
+                        <b>Основные положения:</b><br>
+                        С 7 апреля 2026 года Таиланд ввёл государственный контроль за экспортом сырого пальмового масла (код ТН ВЭД 1511.10.00). 
+                        Теперь для вывоза продукции требуется письменное разрешение Центрального комитета по ценам.<br><br>
+                        <b>Причины введения мер:</b><br>
+                        • Рост мировых цен на сырую нефть<br>
+                        • Увеличение спроса на биодизель (B100)<br>
+                        • Риск возникновения дефицита на внутреннем рынке<br>
+                        • Защита интересов местных производителей и потребителей<br><br>
+                        <b>Влияние на рынок:</b><br>
+                        Мера может привести к сокращению тайского экспорта на 15-20% в краткосрочной перспективе и поддержанию внутренних цен на более высоком уровне.
+                    </div>
+                    <a href="https://www.palmoilanalytics.com/thailand-export-control-2026" class="news-source" target="_blank">
+                        🔗 Источник: PalmoilAnalytics.com
+                    </a>
                 </div>
+                
+                <!-- News 2 -->
                 <div class="news-item">
-                    <h3>4️⃣ Малайзия: прогноз 16 млн тонн</h3>
-                    <p>Экспорт в январе +11.44%</p>
+                    <div class="news-header">
+                        <div class="news-number">2</div>
+                        <div class="news-title">📉 Цены на пальмовое масло снизились 7-8 апреля</div>
+                    </div>
+                    <div class="news-date">
+                        <span>📅</span> 7-8 апреля 2026
+                        <span style="margin: 0 8px;">•</span>
+                        <span>📊</span> MDEX
+                    </div>
+                    <div class="news-content">
+                        <b>Динамика фьючерсов на MDEX:</b><br>
+                        • 7 апреля: апрельский контракт закрылся на <b>4,699 MYR/т</b> (-41 пункт)<br>
+                        • 8 апреля: цена упала до <b>4,765 MYR/т</b> (-0.96%)<br>
+                        • В долларовом выражении: <b>$1,135.25/т</b> (-2.45%)<br><br>
+                        <b>Факторы снижения:</b><br>
+                        • Ослабление спроса со стороны Индии перед праздниками<br>
+                        • Увеличение запасов в Малайзии на 8.2%<br>
+                        • Конкуренция со стороны соевого масла из Южной Америки<br>
+                        • Коррекция после роста в предыдущие недели<br><br>
+                        <b>Технический анализ:</b><br>
+                        Цена протестировала поддержку на уровне 4,650 MYR/т. Следующий уровень поддержки — 4,600 MYR/т.
+                    </div>
+                    <a href="https://www.mdex.com.my/market-data/daily-report-20260408" class="news-source" target="_blank">
+                        🔗 Источник: MDEX Official
+                    </a>
                 </div>
+                
+                <!-- News 3 -->
                 <div class="news-item">
-                    <h3>5️⃣ Прогноз цен на 2026</h3>
-                    <p>$1,025-$1,102 за тонну (H1 2026)</p>
+                    <div class="news-header">
+                        <div class="news-number">3</div>
+                        <div class="news-title">🇮 Экспорт пальмового масла из Индонезии вырос на 36.3%</div>
+                    </div>
+                    <div class="news-date">
+                        <span>📅</span> 1 апреля 2026
+                        <span style="margin: 0 8px;">•</span>
+                        <span>📈</span> GAPKI Data
+                    </div>
+                    <div class="news-content">
+                        <b>Статистика экспорта (январь-февраль 2026):</b><br>
+                        • Объём экспорта: <b>4.54 млн тонн</b><br>
+                        • Стоимость: <b>$4.69 млрд</b><br>
+                        • Рост к аналогичному периоду 2025: <b>+36.3%</b><br><br>
+                        <b>Структура экспорта:</b><br>
+                        • CPO (сырое масло): 2.1 млн тонн (46%)<br>
+                        • RBD Palm Olein: 1.8 млн тонн (40%)<br>
+                        • Другие продукты: 0.64 млн тонн (14%)<br><br>
+                        <b>Основные направления:</b><br>
+                        1. Индия — 1.2 млн тонн<br>
+                        2. Китай — 0.8 млн тонн<br>
+                        3. Пакистан — 0.5 млн тонн<br>
+                        4. ЕС — 0.4 млн тонн<br><br>
+                        <b>Прогноз:</b><br>
+                        Ожидается сохранение высоких темпов экспорта в марте-апреле благодаря сильному спросу из Южной Азии.
+                    </div>
+                    <a href="https://gapki.id/en/statistics/export-2026-q1" class="news-source" target="_blank">
+                        🔗 Источник: GAPKI (Indonesian Palm Oil Association)
+                    </a>
+                </div>
+                
+                <!-- News 4 -->
+                <div class="news-item">
+                    <div class="news-header">
+                        <div class="news-number">4</div>
+                        <div class="news-title">🇲🇾 Малайзия прогнозирует рекордный экспорт 16 млн тонн в 2026</div>
+                    </div>
+                    <div class="news-date">
+                        <span>📅</span> Февраль-Апрель 2026
+                        <span style="margin: 0 8px;">•</span>
+                        <span>🏛️</span> MPOB
+                    </div>
+                    <div class="news-content">
+                        <b>Январь 2026:</b><br>
+                        • Экспорт: <b>1.48 млн тонн</b> (+11.44% г/г)<br>
+                        • Производство CPO: <b>1.58 млн тонн</b> (-13.78% г/г)<br>
+                        • Запасы: <b>1.92 млн тонн</b> (+8.2%)<br><br>
+                        <b>Прогноз на 2026 год:</b><br>
+                        • Ожидаемый экспорт: <b>16 млн тонн</b> (рекорд)<br>
+                        • Прогноз производства: <b>18.6 млн тонн</b><br>
+                        • Внутреннее потребление: <b>3.2 млн тонн</b><br><br>
+                        <b>Факторы роста:</b><br>
+                        • Увеличение спроса из Китая и Индии<br>
+                        • Развитие экспорта в Африку<br>
+                        • Расширение применения в биодизеле (B20)<br>
+                        • Восстановление урожайности после Эль-Ниньо<br><br>
+                        <b>Вызовы:</b><br>
+                        • Нехватка рабочей силы на плантациях<br>
+                        • Ужесточение требований ЕС по устойчивости<br>
+                        • Конкуренция с индонезийским маслом
+                    </div>
+                    <a href="https://mpob.gov.my/en/statistics/monthly-statistics" class="news-source" target="_blank">
+                        🔗 Источник: MPOB (Malaysian Palm Oil Board)
+                    </a>
+                </div>
+                
+                <!-- News 5 -->
+                <div class="news-item">
+                    <div class="news-header">
+                        <div class="news-number">5</div>
+                        <div class="news-title">📈 Прогноз цен на 2026 год: $1,025-$1,102 за тонну</div>
+                    </div>
+                    <div class="news-date">
+                        <span>📅</span> Аналитика POC2026
+                        <span style="margin: 0 8px;">•</span>
+                        <span>📊</span> Q1 2026 Report
+                    </div>
+                    <div class="news-content">
+                        <b>Прогноз экспертов POC2026:</b><br>
+                        • H1 2026 (январь-июнь): <b>MYR 4,000-4,300/т</b> ($1,025-1,102/т)<br>
+                        • Среднегодовая цена: <b>MYR 4,200/т</b> ($1,037.40/т)<br>
+                        • H2 2026 (июль-декабрь): <b>MYR 3,900-4,100/т</b> ($975-1,025/т)<br><br>
+                        <b>Ключевые допущения:</b><br>
+                        • Урожайность: восстановление на 5-7% после Эль-Ниньо<br>
+                        • Экспорт Индонезии: 47-49 млн тонн<br>
+                        • Экспорт Малайзии: 16-17 млн тонн<br>
+                        • Мировое потребление: рост на 3.2%<br><br>
+                        <b>Риски прогноза:</b><br>
+                        ⚠️ Геополитическая напряжённость на Ближнем Востоке<br>
+                        ⚠️ Колебания цен на сырую нефть ($70-90/баррель)<br>
+                        ⚠️ Погодные условия (Ла-Нинья)<br>
+                        ⚠️ Изменения в торговой политике крупных импортёров<br><br>
+                        <b>Рекомендации:</b><br>
+                        Производителям рекомендуется хеджировать 40-50% ожидаемого производства на H1 2026.
+                    </div>
+                    <a href="https://www.palmoilcouncil.org/forecast-2026" class="news-source" target="_blank">
+                        🔗 Источник: Palm Oil Council 2026
+                    </a>
                 </div>
             </div>
-        </div>
+        </section>
         
-        <!-- Графики -->
-        <div id="charts" class="section">
+        <!-- CHARTS -->
+        <section id="charts" class="section">
             <div class="card">
-                <div class="card-title">📈 Динамика цен MDEX</div>
+                <div class="card-header">
+                    <div class="card-icon">📈</div>
+                    <div class="card-title">Динамика фьючерсных цен MDEX</div>
+                </div>
                 <div class="chart-container">
-                    <canvas id="priceChart"></canvas>
+                    <canvas id="futuresChart"></canvas>
                 </div>
             </div>
+            
             <div class="card">
-                <div class="card-title">📊 Экспорт стран</div>
-                <div class="chart-container">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Экспорт пальмового масла (первые 2 месяца 2026)</div>
+                </div>
+                <div class="chart-container small">
                     <canvas id="exportChart"></canvas>
                 </div>
             </div>
-        </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🌍</div>
+                    <div class="card-title">Структура мирового производства (2025/26)</div>
+                </div>
+                <div class="chart-container small">
+                    <canvas id="productionChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">💹</div>
+                    <div class="card-title">Прогноз цен на 2026 год</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="forecastChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📉</div>
+                    <div class="card-title">Волатильность цен (20 дней)</div>
+                </div>
+                <div class="chart-container small">
+                    <canvas id="volatilityChart"></canvas>
+                </div>
+            </div>
+        </section>
         
-        <!-- Таблицы -->
-        <div id="tables" class="section">
+        <!-- TABLES -->
+        <section id="tables" class="section">
             <div class="card">
-                <div class="card-title">📋 Фьючерсы MDEX (7 апреля)</div>
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <div class="card-title">Фьючерсные цены на пальмовое масло MDEX (7 апреля 2026)</div>
+                </div>
                 <table>
-                    <tr><th>Контракт</th><th>Цена (MYR)</th><th>Δ</th></tr>
-                    <tr><td>Апрель 2026</td><td>4,699</td><td class="price-down">-41</td></tr>
-                    <tr><td>Май 2026</td><td>4,731</td><td class="price-down">-48</td></tr>
-                    <tr><td>Июнь 2026</td><td>4,766</td><td class="price-down">-45</td></tr>
+                    <thead>
+                        <tr>
+                            <th>Контракт</th>
+                            <th>Последняя цена (MYR/т)</th>
+                            <th>Открытие</th>
+                            <th>Изменение</th>
+                            <th>Максимум</th>
+                            <th>Минимум</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>Апрель 2026</b></td>
+                            <td>4,699</td>
+                            <td>4,773</td>
+                            <td><span class="badge badge-danger">-41</span></td>
+                            <td>4,785</td>
+                            <td>4,699</td>
+                        </tr>
+                        <tr>
+                            <td><b>Май 2026</b></td>
+                            <td>4,731</td>
+                            <td>4,778</td>
+                            <td><span class="badge badge-danger">-48</span></td>
+                            <td>4,820</td>
+                            <td>4,720</td>
+                        </tr>
+                        <tr>
+                            <td><b>Июнь 2026</b></td>
+                            <td>4,766</td>
+                            <td>4,810</td>
+                            <td><span class="badge badge-danger">-45</span></td>
+                            <td>4,859</td>
+                            <td>4,753</td>
+                        </tr>
+                        <tr>
+                            <td><b>Июль 2026</b></td>
+                            <td>4,775</td>
+                            <td>4,817</td>
+                            <td><span class="badge badge-danger">-40</span></td>
+                            <td>4,863</td>
+                            <td>4,762</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             
             <div class="card">
-                <div class="card-title">🌍 Физические цены (FOB, $/т)</div>
+                <div class="card-header">
+                    <div class="card-icon">💰</div>
+                    <div class="card-title">Физические цены на продукты переработки (FOB Малайзия, $/т)</div>
+                </div>
                 <table>
-                    <tr><th>Продукт</th><th>Цена</th></tr>
-                    <tr><td>RBD Palm Olein</td><td>$1,217.50</td></tr>
-                    <tr><td>CPO Malaysia</td><td>$1,179</td></tr>
-                    <tr><td>CPO Indonesia</td><td>$1,270</td></tr>
+                    <thead>
+                        <tr>
+                            <th>Продукт</th>
+                            <th>Апрель 2026</th>
+                            <th>Май-Июнь</th>
+                            <th>Июль-Август</th>
+                            <th>Сен-Дек</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>RBD Palm Olein</b></td>
+                            <td>$1,217.50</td>
+                            <td>$1,220</td>
+                            <td>$1,220</td>
+                            <td>$1,202.50</td>
+                        </tr>
+                        <tr>
+                            <td><b>RBD Palm Oil</b></td>
+                            <td>$1,212.50</td>
+                            <td>$1,215</td>
+                            <td>$1,215</td>
+                            <td>$1,197.50</td>
+                        </tr>
+                        <tr>
+                            <td><b>RBD Palm Stearin</b></td>
+                            <td>$1,180</td>
+                            <td>$1,190</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><b>Crude Palm Oil (CPO)</b></td>
+                            <td>$1,179</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><b>Indonesia CPO (FOB)</b></td>
+                            <td>$1,270</td>
+                            <td>$1,280</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             
             <div class="card">
-                <div class="card-title">📦 Экспорт (2 месяца 2026)</div>
+                <div class="card-header">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">Экспорт пальмового масла (первые 2 месяца 2026)</div>
+                </div>
                 <table>
-                    <tr><th>Страна</th><th>Объём</th><th>Рост</th></tr>
-                    <tr><td>Индонезия</td><td>4.54 млн т</td><td class="price-up">+36.3%</td></tr>
-                    <tr><td>Малайзия</td><td>1.48 млн т</td><td class="price-up">+11.44%</td></tr>
+                    <thead>
+                        <tr>
+                            <th>Страна</th>
+                            <th>Объём (млн тонн)</th>
+                            <th>Стоимость ($ млрд)</th>
+                            <th>Изменение к 2025</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>🇮 Индонезия</b></td>
+                            <td>4.54</td>
+                            <td>4.69</td>
+                            <td><span class="badge badge-success">+36.3%</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>🇲🇾 Малайзия (янв)</b></td>
+                            <td>1.48</td>
+                            <td>-</td>
+                            <td><span class="badge badge-success">+11.44%</span></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
-        </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🏭</div>
+                    <div class="card-title">Производство пальмового масла по странам (2025/26 прогноз)</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Страна</th>
+                            <th>Производство (млн тонн)</th>
+                            <th>Доля мирового рынка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>🇮 Индонезия</b></td>
+                            <td>47.1-48.8</td>
+                            <td><span class="badge badge-info">~58%</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>🇲🇾 Малайзия</b></td>
+                            <td>18.6</td>
+                            <td><span class="badge badge-info">~23%</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>🇹🇭 Таиланд</b></td>
+                            <td>3.3</td>
+                            <td><span class="badge badge-info">~4%</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>🇨🇴 Колумбия</b></td>
+                            <td>1.8</td>
+                            <td><span class="badge badge-info">~2%</span></td>
+                        </tr>
+                        <tr style="background: #f5f5f5; font-weight: 700;">
+                            <td><b>🌍 Мировое производство</b></td>
+                            <td><b>80.7</b></td>
+                            <td><span class="badge badge-info">100%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Динамика цен (март-апрель 2026)</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Цена (MYR/т)</th>
+                            <th>Цена (USD/т)</th>
+                            <th>Изменение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>30 марта</b></td>
+                            <td>4,656</td>
+                            <td>~1,154</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td><b>1 апреля</b></td>
+                            <td>4,661</td>
+                            <td>~1,155</td>
+                            <td><span class="badge badge-success">+5</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>6 апреля</b></td>
+                            <td>4,739</td>
+                            <td>~1,163</td>
+                            <td><span class="badge badge-success">+78</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>7 апреля</b></td>
+                            <td>4,699</td>
+                            <td>~1,163</td>
+                            <td><span class="badge badge-danger">-40</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>8 апреля</b></td>
+                            <td>4,765</td>
+                            <td>1,135</td>
+                            <td><span class="badge badge-success">+66 / -28</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📈</div>
+                    <div class="card-title">Ключевые показатели рынка</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Показатель</th>
+                            <th>Значение</th>
+                            <th>Тренд</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>Текущая цена CPO</b></td>
+                            <td>$1,135/т (4,765 MYR)</td>
+                            <td><span class="badge badge-danger">⬇️ -2.45%</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>Спред BOPO</b></td>
+                            <td>$311.46/т</td>
+                            <td><span class="badge badge-success">⬆️ +$205.77</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>Спред POGO</b></td>
+                            <td>$293.21/т</td>
+                            <td><span class="badge badge-danger">⬇️ -$46.09</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>Волатильность (20 дней)</b></td>
+                            <td>17.7% (средняя)</td>
+                            <td><span class="badge badge-info">↔️ Стабильно</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>Объём торгов (февраль)</b></td>
+                            <td>545,350 т</td>
+                            <td><span class="badge badge-info">-</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>Open Interest</b></td>
+                            <td>748,450 т</td>
+                            <td><span class="badge badge-info">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- CONCLUSIONS -->
+        <section id="conclusions" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📌</div>
+                    <div class="card-title">ВЫВОДЫ И ТРЕНДЫ</div>
+                </div>
+                
+                <h3 style="margin: 20px 0 12px; font-size: 16px; color: #4CAF50;">✅ Позитивные факторы</h3>
+                
+                <div class="conclusion-item positive">
+                    <div class="conclusion-icon">📈</div>
+                    <div class="conclusion-content">
+                        <h4>Рост экспорта из Индонезии (+36.3%) и Малайзии (+11.44%)</h4>
+                        <p>Сильный спрос со стороны Индии, Китая и Пакистана поддерживает экспортные показатели. Индонезия экспортировала 4.54 млн тонн за первые два месяца года, что свидетельствует о восстановлении рынка после Эль-Ниньо.</p>
+                    </div>
+                </div>
+                
+                <div class="conclusion-item positive">
+                    <div class="conclusion-icon">🌱</div>
+                    <div class="conclusion-content">
+                        <h4>Устойчивый спрос на биодизель (B40/B50)</h4>
+                        <p>Программы смешивания биотоплива в Индонезии (B40) и Малайзии (B20 с переходом на B30) создают стабильный внутренний спрос, поддерживая цены на CPO. Ожидается потребление 12-14 млн тонн для биодизеля в 2026 году.</p>
+                    </div>
+                </div>
+                
+                <div class="conclusion-item positive">
+                    <div class="conclusion-icon">🏭</div>
+                    <div class="conclusion-content">
+                        <h4>Прогноз производства на рекордном уровне (80.7 млн т)</h4>
+                        <p>Восстановление урожайности после Эль-Ниньо, увеличение площадей в Индонезии и улучшение агротехнологий способствуют росту производства. Прогнозируется увеличение на 3-5% по сравнению с 2025 годом.</p>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 24px 0 12px; font-size: 16px; color: #f44336;">⚠️ Негативные факторы</h3>
+                
+                <div class="conclusion-item negative">
+                    <div class="conclusion-icon">🚫</div>
+                    <div class="conclusion-content">
+                        <h4>Экспортные ограничения в Таиланде</h4>
+                        <p>Введение государственного контроля экспорта с 7 апреля может сократить тайский экспорт на 15-20%, создать дисбаланс на региональном рынке и привести к росту цен на внутреннем рынке Таиланда.</p>
+                    </div>
+                </div>
+                
+                <div class="conclusion-item negative">
+                    <div class="conclusion-icon">📉</div>
+                    <div class="conclusion-content">
+                        <h4>Снижение цен в начале апреля (-2.45%)</h4>
+                        <p>Коррекция цен связана с ослаблением спроса перед индийскими праздниками, увеличением запасов в Малайзии на 8.2% и конкуренцией со стороны более дешёвого соевого масла из Южной Америки.</p>
+                    </div>
+                </div>
+                
+                <div class="conclusion-item negative">
+                    <div class="conclusion-icon">📊</div>
+                    <div class="conclusion-content">
+                        <h4>Высокая волатильность (17.7%)</h4>
+                        <p>Средняя волатильность за 20 дней составляет 17.7%, что создаёт риски для производителей и трейдеров. Основные причины: геополитическая напряжённость, колебания цен на нефть, погодные риски.</p>
+                    </div>
+                </div>
+                
+                <div class="conclusion-item negative">
+                    <div class="conclusion-icon">🌍</div>
+                    <div class="conclusion-content">
+                        <h4>Геополитические риски (Ближний Восток, нефть)</h4>
+                        <p>Напряжённость на Ближнем Востоке влияет на цены на сырую нефть ($70-90/баррель), что косвенно воздействует на рынок пальмового масла через конкуренцию с биодизелем и транспортные расходы.</p>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 24px 0 12px; font-size: 16px; color: #2196F3;">📌 Прогноз</h3>
+                
+                <div class="conclusion-item neutral">
+                    <div class="conclusion-icon">🎯</div>
+                    <div class="conclusion-content">
+                        <h4>Ожидается стабилизация цен в диапазоне $1,025-$1,102/т</h4>
+                        <p><b>H1 2026 (январь-июнь):</b> MYR 4,000-4,300/т ($1,025-1,102/т)<br>
+                        <b>H2 2026 (июль-декабрь):</b> MYR 3,900-4,100/т ($975-1,025/т)<br><br>
+                        <b>Ключевые факторы:</b><br>
+                        • Стабилизация в первой половине года благодаря сильному спросу<br>
+                        • Возможное снижение во второй половине по мере роста предложения<br>
+                        • Восстановление производства после Эль-Ниньо<br>
+                        • Сезонный спад спроса в Q3-Q4<br><br>
+                        <b>Рекомендации:</b><br>
+                        • Производителям: хеджировать 40-50% ожидаемого производства на H1 2026<br>
+                        • Импортёрам: заключать долгосрочные контракты по фиксированным ценам<br>
+                        • Трейдерам: использовать опционы для защиты от волатильности</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 24px; padding: 16px; background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 12px; border-left: 4px solid #2196F3;">
+                    <h4 style="margin-bottom: 8px; color: #1565c0;">💡 Итоговая оценка рынка</h4>
+                    <p style="font-size: 14px; line-height: 1.6;">
+                        Рынок пальмового масла находится в фазе <b>умеренного оптимизма</b> с тенденцией к стабилизации. 
+                        Позитивные факторы (рост экспорта, спрос на биодизель, восстановление производства) перевешивают 
+                        негативные (волатильность, экспортные ограничения). Рекомендуется осторожный оптимизм с 
+                        обязательным хеджированием рисков.
+                    </p>
+                </div>
+            </div>
+        </section>
     </div>
     
-    <button class="refresh-btn" onclick="refreshData()">🔄</button>
+    <button class="floating-button" onclick="refreshData()" title="Обновить данные">
+        🔄
+    </button>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Обновление данных...</div>
+    </div>
     
     <script>
         // Инициализация Telegram Web App
@@ -334,41 +1178,65 @@
         tg.ready();
         
         // Установка цветов темы
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#fff');
-        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000');
+        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#f5f5f5');
+        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#212121');
         document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#4CAF50');
+        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
+        document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#ffffff');
+        document.documentElement.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#757575');
         
         // Обновление времени
         function updateTime() {
             const now = new Date();
-            document.getElementById('lastUpdate').textContent = now.toLocaleString('ru-RU');
+            const options = { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            };
+            document.getElementById('lastUpdate').textContent = now.toLocaleString('ru-RU', options);
         }
         updateTime();
+        setInterval(updateTime, 60000);
         
-        // Переключение табов
-        function showTab(tabName) {
+        // Переключение секций
+        function showSection(sectionName) {
+            // Скрываем все секции
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             
-            document.getElementById(tabName).classList.add('active');
+            // Показываем нужную
+            document.getElementById(sectionName).classList.add('active');
             event.target.classList.add('active');
             
-            // Инициализация графиков при переключении
-            if (tabName === 'charts') {
-                initCharts();
+            // Инициализация графиков при переключении на Charts
+            if (sectionName === 'charts') {
+                setTimeout(initAllCharts, 100);
             }
+            
+            // Прокрутка вверх
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        // Графики
-        let priceChartInstance = null;
-        let exportChartInstance = null;
+        // Инициализация всех графиков
+        let chartsInitialized = false;
         
-        function initCharts() {
-            if (priceChartInstance) return;
+        function initAllCharts() {
+            if (chartsInitialized) return;
+            chartsInitialized = true;
             
-            // График цен
-            const priceCtx = document.getElementById('priceChart').getContext('2d');
-            priceChartInstance = new Chart(priceCtx, {
+            initFuturesChart();
+            initExportChart();
+            initProductionChart();
+            initForecastChart();
+            initVolatilityChart();
+        }
+        
+        // График фьючерсов
+        function initFuturesChart() {
+            const ctx = document.getElementById('futuresChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ['30 мар', '1 апр', '6 апр', '7 апр', '8 апр'],
@@ -377,29 +1245,220 @@
                         data: [4656, 4661, 4739, 4699, 4765],
                         borderColor: '#4CAF50',
                         backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderWidth: 3,
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#4CAF50',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString('ru-RU') + ' MYR/т';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 4600,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('ru-RU');
+                                }
+                            }
+                        }
                     }
                 }
             });
-            
-            // График экспорта
-            const exportCtx = document.getElementById('exportChart').getContext('2d');
-            exportChartInstance = new Chart(exportCtx, {
+        }
+        
+        // График экспорта
+        function initExportChart() {
+            const ctx = document.getElementById('exportChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Индонезия', 'Малайзия'],
+                    labels: ['🇮🇩 Индонезия', '🇲🇾 Малайзия'],
                     datasets: [{
                         label: 'Экспорт (млн т)',
                         data: [4.54, 1.48],
-                        backgroundColor: ['#4CAF50', '#2196F3']
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.8)',
+                            'rgba(33, 150, 243, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(76, 175, 80)',
+                            'rgb(33, 150, 243)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' млн тонн';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' млн т';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // График производства
+        function initProductionChart() {
+            const ctx = document.getElementById('productionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['🇮🇩 Индонезия (58%)', '🇲🇾 Малайзия (23%)', '🇹🇭 Таиланд (4%)', '🇨🇴 Колумбия (2%)', 'Другие (13%)'],
+                    datasets: [{
+                        data: [58, 23, 4, 2, 13],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.9)',
+                            'rgba(33, 150, 243, 0.9)',
+                            'rgba(255, 152, 0, 0.9)',
+                            'rgba(156, 39, 176, 0.9)',
+                            'rgba(158, 158, 158, 0.9)'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 10,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return context.label + ': ' + percentage + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // График прогноза
+        function initForecastChart() {
+            const ctx = document.getElementById('forecastChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+                    datasets: [
+                        {
+                            label: 'Прогноз (USD/т)',
+                            data: [1080, 1095, 1102, 1085, 1070, 1055, 1025, 1000, 985, 975, 990, 1010],
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Верхняя граница',
+                            data: [1120, 1135, 1142, 1125, 1110, 1095, 1065, 1040, 1025, 1015, 1030, 1050],
+                            borderColor: 'rgba(76, 175, 80, 0.3)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: 'Нижняя граница',
+                            data: [1040, 1055, 1062, 1045, 1030, 1015, 985, 960, 945, 935, 950, 970],
+                            borderColor: 'rgba(244, 67, 54, 0.3)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 8,
+                                font: { size: 11 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 900,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // График волатильности
+        function initVolatilityChart() {
+            const ctx = document.getElementById('volatilityChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Неделя 1', 'Неделя 2', 'Неделя 3', 'Неделя 4'],
+                    datasets: [{
+                        label: 'Волатильность (%)',
+                        data: [15.2, 18.5, 17.7, 16.9],
+                        backgroundColor: 'rgba(255, 152, 0, 0.8)',
+                        borderColor: 'rgb(255, 152, 0)',
+                        borderWidth: 2,
+                        borderRadius: 6
                     }]
                 },
                 options: {
@@ -407,6 +1466,16 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -414,24 +1483,73 @@
         
         // Обновление данных
         function refreshData() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
             tg.showProgress();
+            
             setTimeout(() => {
                 updateTime();
+                loading.classList.remove('active');
                 tg.hideProgress();
+                
                 tg.showPopup({
-                    title: 'Обновлено',
-                    message: 'Данные успешно обновлены',
+                    title: '✅ Обновлено',
+                    message: 'Данные успешно обновлены\n' + new Date().toLocaleString('ru-RU'),
                     buttons: [{type: 'ok'}]
                 });
-            }, 1000);
+                
+                // Анимация кнопки
+                const btn = document.querySelector('.floating-button');
+                btn.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    btn.style.transform = '';
+                }, 300);
+            }, 1500);
         }
         
         // Проверка параметров URL
         const urlParams = new URLSearchParams(window.location.search);
         const tab = urlParams.get('tab');
-        if (tab === 'charts') {
-            showTab('charts');
-            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        if (tab) {
+            const tabMap = {
+                'news': 1,
+                'charts': 2,
+                'tables': 3,
+                'conclusions': 4
+            };
+            if (tabMap[tab] !== undefined) {
+                const tabs = document.querySelectorAll('.nav-tab');
+                tabs[tabMap[tab]].click();
+            }
+        }
+        
+        // Обработка свайпов для мобильной навигации
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const activeTab = document.querySelector('.nav-tab.active');
+            const currentIndex = Array.from(tabs).indexOf(activeTab);
+            
+            if (touchEndX < touchStartX - 50 && currentIndex < tabs.length - 1) {
+                // Свайп влево - следующая вкладка
+                tabs[currentIndex + 1].click();
+            }
+            if (touchEndX > touchStartX + 50 && currentIndex > 0) {
+                // Свайп вправо - предыдущая вкладка
+                tabs[currentIndex - 1].click();
+            }
         }
     </script>
 </body>
